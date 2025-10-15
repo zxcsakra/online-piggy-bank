@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сбор средств</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .image-container {
+            width: 100%;
+            height: 300px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            position: relative;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #ccc;
+            transition: all 0.3s ease;
+        }
+        
+        .image-container:hover {
+            border-color: #6a11cb;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .image-placeholder {
+            color: #888;
+            font-size: 16px;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+        }
+        
+        .goal-container {
+            position: relative;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+        
+        .goal-line {
+            height: 2px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            margin-bottom: 15px;
+        }
+        
+        .goal-text {
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .input-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .goal-input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            width: 200px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+        
+        .goal-input:focus {
+            outline: none;
+            border-color: #6a11cb;
+        }
+        
+        .set-goal-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .set-goal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .current-amount {
+            font-size: 24px;
+            font-weight: 600;
+            color: #6a11cb;
+            margin: 10px 0;
+        }
+        
+        .amount-input-container {
+            margin-top: 15px;
+        }
+        
+        .amount-input {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 150px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        .amount-input:focus {
+            outline: none;
+            border-color: #6a11cb;
+        }
+        
+        .add-amount-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .add-amount-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .percentage-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2575fc;
+            margin-top: 10px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .progress-line {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Сбор средств</h1>
+        
+        <div class="image-container" id="imageContainer">
+            <div class="image-placeholder">Загрузите изображение</div>
+        </div>
+        
+        <input type="file" id="imageInput" class="hidden" accept="image/*">
+        <button class="upload-btn" id="uploadBtn">Загрузить изображение</button>
+        
+        <div class="goal-container">
+            <div class="goal-line"></div>
+            
+            <div class="progress-info">
+                <div class="progress-line">
+                    <div class="goal-text" id="goalText">Цель сбора: 0 руб.</div>
+                    <div class="current-amount" id="currentAmount">Собрано: 0/0 руб.</div>
+                </div>
+                <div class="progress-line">
+                    <div class="goal-text">Выполнение цели</div>
+                    <div class="percentage-text" id="percentageText">0%</div>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="input-container">
+                <input type="number" class="goal-input" id="goalInput" placeholder="Введите цель сбора">
+                <button class="set-goal-btn" id="setGoalBtn">Установить цель</button>
+            </div>
+            
+            <div class="amount-input-container">
+                <input type="number" class="amount-input" id="amountInput" placeholder="Добавить сумму">
+                <button class="add-amount-btn" id="addAmountBtn">Добавить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageContainer = document.getElementById('imageContainer');
+            const imageInput = document.getElementById('imageInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const goalText = document.getElementById('goalText');
+            const goalInput = document.getElementById('goalInput');
+            const setGoalBtn = document.getElementById('setGoalBtn');
+            const currentAmount = document.getElementById('currentAmount');
+            const progressBar = document.getElementById('progressBar');
+            const amountInput = document.getElementById('amountInput');
+            const addAmountBtn = document.getElementById('addAmountBtn');
+            const percentageText = document.getElementById('percentageText');
+            
+            let goal = 0;
+            let collected = 0;
+            
+            // Обработчик загрузки изображения
+            uploadBtn.addEventListener('click', function() {
+                imageInput.click();
+            });
+            
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        imageContainer.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        imageContainer.appendChild(img);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Обработчик установки цели
+            setGoalBtn.addEventListener('click', function() {
+                const goalValue = goalInput.value;
+                if (goalValue && !isNaN(goalValue) && goalValue > 0) {
+                    goal = parseInt(goalValue);
+                    goalText.textContent = `Цель сбора: ${goal.toLocaleString('ru-RU')} руб.`;
+                    goalInput.value = '';
+                    updateProgress();
+                } else {
+                    alert('Пожалуйста, введите корректную сумму');
+                }
+            });
+            
+            // Обработчик добавления суммы
+            addAmountBtn.addEventListener('click', function() {
+                const amountValue = amountInput.value;
+                if (amountValue && !isNaN(amountValue) && amountValue > 0) {
+                    collected += parseInt(amountValue);
+                    currentAmount.textContent = `Собрано: ${collected.toLocaleString('ru-RU')}/${goal.toLocaleString('ru-RU')} руб.`;
+                    amountInput.value = '';
+                    updateProgress();
+                } else {
+                    alert('Пожалуйста, введите корректную сумму');
+                }
+            });
+            
+            // Функция обновления прогресса
+            function updateProgress() {
+                if (goal > 0) {
+                    const percentage = Math.min(100, (collected / goal) * 100);
+                    progressBar.style.width = `${percentage}%`;
+                    
+                    // Обновляем текст цели сбора
+                    goalText.textContent = `Цель сбора: ${goal.toLocaleString('ru-RU')} руб.`;
+                    currentAmount.textContent = `Собрано: ${collected.toLocaleString('ru-RU')}/${goal.toLocaleString('ru-RU')} руб.`;
+                    
+                    // Обновляем процент выполнения
+                    percentageText.textContent = `${Math.round(percentage)}%`;
+                }
+            }
+            
+            // Обработчики нажатия Enter в полях ввода
+            goalInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    setGoalBtn.click();
+                }
+            });
+            
+            amountInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addAmountBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
