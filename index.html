@@ -224,6 +224,23 @@
             flex-direction: column;
             align-items: center;
         }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 65, 108, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -264,6 +281,8 @@
                 <input type="number" class="amount-input" id="amountInput" placeholder="Добавить сумму">
                 <button class="add-amount-btn" id="addAmountBtn">Добавить</button>
             </div>
+            
+            <button class="reset-btn" id="resetBtn">Сбросить все данные</button>
         </div>
     </div>
 
@@ -280,9 +299,14 @@
             const amountInput = document.getElementById('amountInput');
             const addAmountBtn = document.getElementById('addAmountBtn');
             const percentageText = document.getElementById('percentageText');
+            const resetBtn = document.getElementById('resetBtn');
             
-            let goal = 0;
-            let collected = 0;
+            // Загружаем данные из localStorage при загрузке страницы
+            let goal = localStorage.getItem('fundraisingGoal') ? parseInt(localStorage.getItem('fundraisingGoal')) : 0;
+            let collected = localStorage.getItem('fundraisingCollected') ? parseInt(localStorage.getItem('fundraisingCollected')) : 0;
+            
+            // Инициализируем интерфейс с сохраненными данными
+            updateInterface();
             
             // Обработчик загрузки изображения
             uploadBtn.addEventListener('click', function() {
@@ -299,20 +323,35 @@
                         const img = document.createElement('img');
                         img.src = event.target.result;
                         imageContainer.appendChild(img);
+                        
+                        // Сохраняем изображение в localStorage
+                        localStorage.setItem('fundraisingImage', event.target.result);
                     };
                     
                     reader.readAsDataURL(file);
                 }
             });
             
+            // Загружаем сохраненное изображение при загрузке страницы
+            const savedImage = localStorage.getItem('fundraisingImage');
+            if (savedImage) {
+                imageContainer.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = savedImage;
+                imageContainer.appendChild(img);
+            }
+            
             // Обработчик установки цели
             setGoalBtn.addEventListener('click', function() {
                 const goalValue = goalInput.value;
                 if (goalValue && !isNaN(goalValue) && goalValue > 0) {
                     goal = parseInt(goalValue);
-                    goalText.textContent = `Цель сбора: ${goal.toLocaleString('ru-RU')} руб.`;
                     goalInput.value = '';
-                    updateProgress();
+                    
+                    // Сохраняем в localStorage
+                    localStorage.setItem('fundraisingGoal', goal);
+                    
+                    updateInterface();
                 } else {
                     alert('Пожалуйста, введите корректную сумму');
                 }
@@ -323,16 +362,37 @@
                 const amountValue = amountInput.value;
                 if (amountValue && !isNaN(amountValue) && amountValue > 0) {
                     collected += parseInt(amountValue);
-                    currentAmount.textContent = `Собрано: ${collected.toLocaleString('ru-RU')}/${goal.toLocaleString('ru-RU')} руб.`;
                     amountInput.value = '';
-                    updateProgress();
+                    
+                    // Сохраняем в localStorage
+                    localStorage.setItem('fundraisingCollected', collected);
+                    
+                    updateInterface();
                 } else {
                     alert('Пожалуйста, введите корректную сумму');
                 }
             });
             
-            // Функция обновления прогресса
-            function updateProgress() {
+            // Обработчик сброса данных
+            resetBtn.addEventListener('click', function() {
+                if (confirm('Вы уверены, что хотите сбросить все данные? Это действие нельзя отменить.')) {
+                    goal = 0;
+                    collected = 0;
+                    
+                    // Очищаем localStorage
+                    localStorage.removeItem('fundraisingGoal');
+                    localStorage.removeItem('fundraisingCollected');
+                    localStorage.removeItem('fundraisingImage');
+                    
+                    // Сбрасываем изображение
+                    imageContainer.innerHTML = '<div class="image-placeholder">Загрузите изображение</div>';
+                    
+                    updateInterface();
+                }
+            });
+            
+            // Функция обновления интерфейса
+            function updateInterface() {
                 if (goal > 0) {
                     const percentage = Math.min(100, (collected / goal) * 100);
                     progressBar.style.width = `${percentage}%`;
@@ -343,6 +403,11 @@
                     
                     // Обновляем процент выполнения
                     percentageText.textContent = `${Math.round(percentage)}%`;
+                } else {
+                    goalText.textContent = 'Цель сбора: 0 руб.';
+                    currentAmount.textContent = 'Собрано: 0/0 руб.';
+                    percentageText.textContent = '0%';
+                    progressBar.style.width = '0%';
                 }
             }
             
